@@ -18,7 +18,7 @@ RUN IPE_GD_WITHOUTAVIF=1 install-php-extensions bcmath bz2 calendar exif gd gett
     mongodb-stable \
     imagick-stable
 
-RUN apk add --no-cache --update supervisor=~4.2 nginx=~1.20 nginx-mod-http-headers-more openssh-client git
+RUN apk add --no-cache --update supervisor=~4.2 nginx=~1.20 nginx-mod-http-headers-more openssh-client git less
 
 # Instalação do composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
@@ -36,7 +36,7 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 ADD ./public /var/www/app/public
 RUN chown -R app:app /var/www/app
 
-WORKDIR /var/www
+WORKDIR /var/www/app
 
 EXPOSE 80
 
