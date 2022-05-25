@@ -137,7 +137,7 @@
 version: '3.3'
 services:
   app:
-    image: testing
+    image: convenia/php-full:latest
     container_name: application
     volumes:
       - .:/var/www/app
@@ -186,7 +186,7 @@ RUN addgroup -S -g 2000 newone && adduser -u 2000 -G newone -D newone && \
             <div class="division-bar">
             </div>
 
-            <p>The nginx configuration can be found <a href="">here</a>. Usually we need to override this configuration for some reason.</p>
+            <p>The nginx configuration can be found <a href="https://github.com/convenia/php-full-8.1-image/blob/main/docker/nginx/default.conf">here</a>. Usually we need to override this configuration for some reason.</p>
             <p>We can override nginx configuration at build time by coping a new onfiguration over the default one</p>
             <pre class="button code">
 FROM convenia/php-full:latest
@@ -214,7 +214,7 @@ services:
                 For any suggestion or bug try to open an issue on github or send a tweet to us
             </p>
 
-            <a href="https://twitter.com/convenia" class="button"  style="display: inline-block;">
+            <a href="https://github.com/convenia/php-full-8.1-image" class="button"  style="display: inline-block;">
                 Github
             </a>
 

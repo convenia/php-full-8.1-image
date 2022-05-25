@@ -10,7 +10,7 @@ All you need to do is creating a docker-compose.yml like this in your project ro
 version: '3.3'
 services:
   app:
-    image: testing
+    image: convenia/php-full:latest
     container_name: application
     volumes:
       - .:/var/www/app
@@ -40,7 +40,7 @@ The image build runs every week in order to ensure that all software are up to d
 
 ### Change Nginx Configuration
 
-The nginx configuration can be found [here](#github-link). Usually we need to override this configuration for some reason.
+The nginx configuration can be found [here](https://github.com/convenia/php-full-8.1-image/blob/main/docker/nginx/default.conf). Usually we need to override this configuration for some reason.
 
 We can override nginx configuration at build time by coping a new onfiguration over the default one
 
@@ -66,4 +66,4 @@ services:
 
 ### Bugs, and suggestion
 
-For any suggestion or bug try to [open an issue on github]() or [send a tweet](https://twitter.com/convenia) to us
+For any suggestion or bug try to [open an issue on github](https://github.com/convenia/php-full-8.1-image) or [send a tweet](https://twitter.com/convenia) to us
