@@ -11,4 +11,4 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - run: curl ${{ secrets.BUILD_URL }}
+      - run: curl -X POST ${{ secrets.BUILD_URL }}
