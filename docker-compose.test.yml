@@ -1,0 +1,5 @@
+services:
+  sut:
+    user: app:app
+    build: .
+    command: run_tests.sh
