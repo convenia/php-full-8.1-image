@@ -11,5 +11,4 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Docker Hub Build
       - run: curl ${{ secrets.BUILD_URL }}
