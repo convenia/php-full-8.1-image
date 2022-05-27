@@ -1,7 +1,4 @@
 services:
   sut:
-    user: app:app
     build: .
-    volumes:
-      - ./run_tests.sh:/var/www/app/run_tests.sh
-    command: cd /var/www/app && run_tests.sh
+    command: /run_tests.sh

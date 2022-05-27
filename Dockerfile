@@ -29,12 +29,15 @@ RUN addgroup -S -g $GID app && adduser -u $UID -G app -D app
 COPY ./docker/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY ./docker/supervisor/supervisord.conf /etc/supervisord.conf
 COPY ./docker/nginx/default.conf /etc/nginx/http.d/default.conf
+# For Automated Tests on Docker Hub
+COPY ./docker/nginx/default.conf /etc/nginx/http.d/default.conf
+COPY ./run_tests.sh /run_tests.sh
 
 #Enable production configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 ADD ./public /var/www/app/public
-RUN chown -R app:app /var/www/app
+RUN chown -R app:app /var/www/app && chmod +x /run_tests.sh
 
 WORKDIR /var/www/app
 
