@@ -18,7 +18,7 @@ RUN IPE_GD_WITHOUTAVIF=1 install-php-extensions bcmath bz2 calendar exif gd gett
     mongodb-stable \
     imagick-stable
 
-RUN apk add --no-cache --update supervisor=~4.2 nginx=~1.20 nginx-mod-http-headers-more openssh-client git less curl
+RUN apk add --no-cache --update supervisor=~4.2 openssh-client git less curl
 
 # Instalação do composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
@@ -30,7 +30,6 @@ COPY ./docker/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY ./docker/supervisor/supervisord.conf /etc/supervisord.conf
 COPY ./docker/nginx/default.conf /etc/nginx/http.d/default.conf
 # For Automated Tests on Docker Hub
-COPY ./docker/nginx/default.conf /etc/nginx/http.d/default.conf
 COPY ./run_tests.sh /run_tests.sh
 
 #Enable production configuration
