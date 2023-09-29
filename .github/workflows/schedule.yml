@@ -1,6 +1,10 @@
 name: scheduled-build
 
 on:
+  push:
+    branches:
+      - main
+      - 8.1
   schedule:
     - cron:  '0 0 * * 6'
 
