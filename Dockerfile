@@ -11,7 +11,7 @@ ARG GID=1000
 # Instalação do php ext installer (https://github.com/mlocati/docker-php-extension-installer)
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 # Instalação de pacotes
-RUN IPE_GD_WITHOUTAVIF=1 install-php-extensions bcmath bz2 calendar exif gd gettext gmp opcache pcntl \
+RUN IPE_GD_WITHOUTAVIF=1 install-php-extensions bcmath bz2 calendar exif gd gettext gmp opcache intl pcntl \
     pdo_mysql sockets xsl zip \
     igbinary-stable \
     redis-stable \
