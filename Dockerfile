@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine3.17
+FROM php:8.3-fpm-alpine3.17
 # Informações
 LABEL maintainer="leonardo.lemos@convenia.com.br"
 LABEL company="Convenia"
