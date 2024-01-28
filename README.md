@@ -63,6 +63,36 @@ services:
     ports:
       - 80:80
 ```
+### How to cron
+The image contains the cron binary then lets take a look how easy would be to spawn the [Laravel Scheduler](https://laravel.com/docs/10.x/scheduling) for example:
+
+1. First step would be add the `crontab` file at your project with this content:
+
+```
+* * * * * php /var/www/app/artisan schedule:run
+```
+
+2. Second step would be place the crontab file on the default cron directory:
+
+```Dockerfile
+FROM convenia/php-full:8.3
+
+ADD . /var/www/app
+
+COPY crontab /etc/crontabs/root
+```
+
+3. Build the image
+
+```
+docker build -t easycron .
+```
+
+4. Now we just need to execute the cron command:
+
+```
+docker run -rm easycron crond -l 2 -f
+```
 
 ### Changelog
 #### PHP version 8.3
