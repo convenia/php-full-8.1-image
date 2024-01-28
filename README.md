@@ -91,7 +91,7 @@ docker build -t easycron .
 4. Now we just need to execute the cron command:
 
 ```
-docker run -rm easycron crond -l 2 -f
+docker run --rm easycron crond -l 2 -f
 ```
 
 ### Changelog

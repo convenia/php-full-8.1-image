@@ -204,7 +204,52 @@ services:
       - ./local-path-to-config/new-default.conf:/etc/nginx/http.d/default.conf
     ports:
       - 80:80</pre>
-            
+
+            <p class="p-title"><strong>How to Cron</strong></p>
+
+            <div class="division-bar">
+            </div>
+
+            <p>
+                1. The image contains the cron binary then lets take a look how easy would be to spawn the <a href="https://laravel.com/docs/10.x/scheduling">Laravel Scheduler</a> for example:
+            </p>
+
+            <pre class="button code">
+
+* * * * * php /var/www/app/artisan schedule:run
+            </pre>
+
+            <p>
+                2. Second step would be place the crontab file on the default cron directory:
+            </p>
+
+            <pre class="button code">
+
+FROM convenia/php-full:8.3
+
+ADD . /var/www/app
+
+COPY crontab /etc/crontabs/root
+            </pre>
+
+            <p>
+                3. Build the image:
+            </p>
+
+            <pre class="button code">
+
+docker build -t easycron .
+            </pre>
+
+            <p>
+                4. Now we just need to execute the cron command:
+            </p>
+
+            <pre class="button code">
+
+docker run --rm easycron crond -l 2 -f
+            </pre>
+
             <p class="p-title"><strong>Bugs, and suggestion</strong></p>
 
             <div class="division-bar">
