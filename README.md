@@ -97,6 +97,11 @@ docker run --rm easycron crond -l 2 -f
 ### Changelog
 #### PHP version 8.3
 - We removed Imagick extension. If you wish to use Imagick extension add to your Dockerfile. 
+- PHP version to 8.3
 
+#### PHP version 8.4
+- Nginx changed to 1.26.2
+- PHP version to 8.4
+- expose_php directive disabled in the default php pool configuration
 
 For any suggestion or bug try to [open an issue on github](https://github.com/convenia/php-full-8.1-image) or [send a tweet](https://twitter.com/convenia) to us
