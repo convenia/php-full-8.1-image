@@ -103,5 +103,6 @@ docker run --rm easycron crond -l 2 -f
 - Nginx changed to 1.26.2
 - PHP version to 8.4
 - expose_php directive disabled in the default php pool configuration
+- added extension mysqli
 
 For any suggestion or bug try to [open an issue on github](https://github.com/convenia/php-full-8.1-image) or [send a tweet](https://twitter.com/convenia) to us
