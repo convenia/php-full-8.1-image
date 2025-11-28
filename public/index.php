@@ -225,7 +225,7 @@ services:
 
             <pre class="button code">
 
-FROM convenia/php-full:8.3
+FROM convenia/php-full:8.5
 
 ADD . /var/www/app
 
