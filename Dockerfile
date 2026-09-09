@@ -15,7 +15,7 @@ RUN IPE_GD_WITHOUTAVIF=1 install-php-extensions bcmath bz2 calendar exif gd gett
     pdo_mysql sockets xsl zip \
     igbinary-stable \
     redis-stable \
-    mongodb-2.5.2 \
+    mongodb-^2@stable \
     mysqli
 
 RUN apk add --no-cache --update supervisor=~4.2 nginx=~1.26 nginx-mod-http-headers-more openssh-client git less curl
