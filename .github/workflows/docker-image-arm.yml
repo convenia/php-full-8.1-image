@@ -1,9 +1,9 @@
-# Builds, tests and publishes convenia/php-full on Docker Hub (replaces the Docker Hub autobuild and autotest).
+# Builds, tests and publishes the arm64 images of convenia/php-full on Docker Hub (copy of docker-image.yml).
 #
-# Every X.Y/Dockerfile is published as the X.Y tag, and the LATEST version is also published as latest.
+# Every X.Y/Dockerfile is published as the X.Y-arm64 tag, and the LATEST version is also published as latest-arm64.
 # The other files (docker/, public/, run_tests.sh) are shared by every version: the build context is the repo root.
 # A new PHP version gets its X.Y/Dockerfile and goes into the matrix list and LATEST.
-name: docker-image
+name: docker-image-arm
 
 on:
   # Publishes every version when a change lands on main
@@ -32,7 +32,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -52,8 +52,8 @@ jobs:
 
       - id: tags
         run: |
-          tags=$IMAGE:$VERSION
-          if [ "$VERSION" = "$LATEST" ]; then tags=$tags,$IMAGE:latest; fi
+          tags=$IMAGE:$VERSION-arm64
+          if [ "$VERSION" = "$LATEST" ]; then tags=$tags,$IMAGE:latest-arm64; fi
           echo "tags=$tags" >> "$GITHUB_OUTPUT"
 
       - name: Login to Docker Hub
@@ -76,7 +76,7 @@ jobs:
 
       # Same test as docker-compose.test.yml, run against the image that gets pushed
       - name: Test
-        run: docker run --rm "$IMAGE:$VERSION" /run_tests.sh
+        run: docker run --rm "$IMAGE:$VERSION-arm64" /run_tests.sh
 
       - name: Push
         if: env.PUBLISH == 'true'
