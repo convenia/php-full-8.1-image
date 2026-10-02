@@ -75,7 +75,7 @@ The image contains the cron binary then lets take a look how easy would be to sp
 2. Second step would be place the crontab file on the default cron directory:
 
 ```Dockerfile
-FROM convenia/php-full:8.3
+FROM convenia/php-full:latest
 
 ADD . /var/www/app
 
@@ -95,6 +95,10 @@ docker run --rm easycron crond -l 2 -f
 ```
 
 ### Changelog
+#### PHP version 8.5
+- Changed mongodb driver version from 1.21.1 to 2.1.4
+- PHP version to 8.5
+
 #### PHP version 8.3
 - We removed Imagick extension. If you wish to use Imagick extension add to your Dockerfile. 
 - PHP version to 8.3
