@@ -1,4 +1,4 @@
-FROM php:8.5-fpm-alpine3.21
+FROM php:8.3-fpm-alpine3.17
 # Informações
 LABEL maintainer="leonardo.lemos@convenia.com.br"
 LABEL company="Convenia"
@@ -11,14 +11,14 @@ ARG GID=1000
 # Instalação do php ext installer (https://github.com/mlocati/docker-php-extension-installer)
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 # Instalação de pacotes
-RUN IPE_GD_WITHOUTAVIF=1 install-php-extensions bcmath bz2 calendar exif gd gettext gmp intl pcntl \
+RUN IPE_GD_WITHOUTAVIF=1 install-php-extensions bcmath bz2 calendar exif gd gettext gmp opcache intl pcntl \
     pdo_mysql sockets xsl zip \
     igbinary-stable \
     redis-stable \
-    mongodb-^2@stable \
-    mysqli
+    mongodb-1.21.1
 
-RUN apk add --no-cache --update supervisor=~4.2 nginx=~1.26 nginx-mod-http-headers-more openssh-client git less curl
+
+RUN apk add --no-cache --update supervisor=~4.2 nginx=~1.22 nginx-mod-http-headers-more openssh-client git less curl
 
 # Instalação do composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer

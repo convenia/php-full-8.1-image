@@ -1,0 +1,88 @@
+# Builds, tests and publishes convenia/php-full on Docker Hub (replaces the Docker Hub autobuild and autotest).
+#
+# Every X.Y/Dockerfile is published as the X.Y tag, and the LATEST version is also published as latest.
+# The other files (docker/, public/, run_tests.sh) are shared by every version: the build context is the repo root.
+# A new PHP version gets its X.Y/Dockerfile and goes into the matrix list and LATEST.
+name: docker-image
+
+on:
+  # Publishes every version when a change lands on main
+  push:
+    branches:
+      - main
+  # Builds and tests every version, without publishing
+  pull_request:
+  # Weekly rebuild to pick up base image and package updates
+  schedule:
+    - cron: '0 0 * * 6'
+  # Rebuilds every version, like the schedule
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Push the images to Docker Hub
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: convenia/php-full
+  LATEST: '8.5'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['8.1', '8.2', '8.3', '8.4', '8.5']
+    # Publishes of the same tag run one at a time, so an older commit never overwrites a newer one.
+    # Pull requests get their own group, so they never cancel a pending publish
+    concurrency:
+      group: ${{ github.workflow }}-${{ matrix.version }}-${{ github.event_name == 'pull_request' && github.ref || 'publish' }}
+    env:
+      VERSION: ${{ matrix.version }}
+      PUBLISH: ${{ github.event_name == 'schedule' || github.event_name == 'push' || inputs.publish == true }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - id: tags
+        run: |
+          tags=$IMAGE:$VERSION
+          if [ "$VERSION" = "$LATEST" ]; then tags=$tags,$IMAGE:latest; fi
+          echo "tags=$tags" >> "$GITHUB_OUTPUT"
+
+      - name: Login to Docker Hub
+        if: env.PUBLISH == 'true'
+        uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build
+        uses: docker/build-push-action@v7
+        with:
+          # The default git context ignores the checkout: use the checked out repo root as context
+          context: .
+          file: ${{ matrix.version }}/Dockerfile
+          load: true
+          tags: ${{ steps.tags.outputs.tags }}
+
+      # Same test as docker-compose.test.yml, run against the image that gets pushed
+      - name: Test
+        run: docker run --rm "$IMAGE:$VERSION" /run_tests.sh
+
+      - name: Push
+        if: env.PUBLISH == 'true'
+        env:
+          TAGS: ${{ steps.tags.outputs.tags }}
+        run: |
+          for tag in ${TAGS//,/ }; do
+            docker push "$tag"
+          done

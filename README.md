@@ -20,6 +20,51 @@ services:
 
 The container will try to serve the application inside the "public" directory then if your application does not have a public directory you can [override the nginx config](#change-nginx-configuration) to look at the correct location
 
+### PHP versions
+
+Every PHP version has its own Dockerfile inside a folder with the version name (`8.1/Dockerfile`, `8.2/Dockerfile`...) and is published as the tag with the same name (`convenia/php-full:8.4`). The latest version is also published as `latest`.
+
+The other files (`docker/`, `public/` and `run_tests.sh`) are shared by every version, so the build context is always the repository root:
+
+```
+docker build -f 8.4/Dockerfile .
+```
+
+To test a version locally:
+
+```
+PHP_VERSION=8.4 docker compose -f docker-compose.test.yml run --rm sut
+```
+
+### Production and Development versions
+
+The 8.5 Dockerfile has two build targets. The production one is the default:
+
+```
+# production (default)
+docker build -f 8.5/Dockerfile .
+
+# development
+docker build -f 8.5/Dockerfile --target development .
+```
+
+The development version is the production image plus:
+
+- [pcov](https://github.com/krakjoe/pcov) extension for code coverage
+- [Redocly CLI](https://redocly.com/docs/cli/) (`redocly`) for API documentation
+- [Infection](https://infection.github.io/) as a global composer dependency (`infection`)
+- [nvm](https://github.com/nvm-sh/nvm) with the current Node LTS as default (`node`, `npm`)
+- [Yarn](https://classic.yarnpkg.com/) installed globally (`yarn`)
+- `bash`, `vim` and `sudo` (the `app` user has passwordless sudo)
+
+The `nvm` command works in any bash shell, including non-interactive ones like the GitHub Actions `shell: bash`. The node version selected with `nvm use` (or `nvm install`) stays as the default `node` in the PATH for the next commands, even in `sh`:
+
+```yml
+- run: nvm install 20
+  shell: bash
+- run: npm ci
+```
+
 ### Change User and Group
 
 The application will run with the user "app" by default. This user has the id and group 1000. We can change the id running this commands at our own Dockerfile:
@@ -96,6 +141,7 @@ docker run --rm easycron crond -l 2 -f
 
 ### Changelog
 #### PHP version 8.5
+- Added the development build target (pcov, Redocly CLI, Infection, nvm, Yarn, bash, vim and sudo)
 - Changed mongodb driver version from 1.21.1 to 2.1.4
 - PHP version to 8.5
 

@@ -1,4 +1,7 @@
+# PHP_VERSION=8.4 docker compose -f docker-compose.test.yml run --rm sut
 services:
   sut:
-    build: .
+    build:
+      context: .
+      dockerfile: ${PHP_VERSION:-8.5}/Dockerfile
     command: /run_tests.sh
