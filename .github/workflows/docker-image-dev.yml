@@ -1,6 +1,7 @@
 # Builds, tests and publishes the development images of convenia/php-full on Docker Hub.
 #
 # The development target of every X.Y/Dockerfile in the matrix is published as the X.Y-dev tag.
+# The tags are multi-arch (amd64 and arm64), so the docker client pulls the image of its own arch.
 # A version goes into the matrix list when its Dockerfile gets the development target.
 name: docker-image-dev
 
@@ -55,6 +56,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Emulates arm64 to build it on the amd64 runner
+      - uses: docker/setup-qemu-action@v4
+
       - uses: docker/setup-buildx-action@v4
 
       - name: Build
@@ -67,14 +71,22 @@ jobs:
           load: true
           tags: ${{ env.IMAGE }}:${{ env.TAG }}
 
-      # Same test as the production image, plus the development tools: they are in the PATH of sh,
-      # and nvm works in a non-interactive bash
+      # Same test as the production image plus the development tools, run against the amd64 image that gets pushed:
+      # the tools are in the PATH of sh, and nvm works in a non-interactive bash
       - name: Test
         run: |
           docker run --rm "$IMAGE:$TAG" /run_tests.sh
           docker run --rm "$IMAGE:$TAG" sh -c 'php -m | grep -qx pcov && node --version && yarn --version && redocly --version && infection --version'
           docker run --rm "$IMAGE:$TAG" bash -c 'nvm --version'
 
+      # Pushes both archs in one multi-arch tag: amd64 comes from the builder cache, arm64 is built here
       - name: Push
         if: env.PUBLISH == 'true'
-        run: docker push "$IMAGE:$TAG"
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ${{ matrix.version }}/Dockerfile
+          target: development
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.IMAGE }}:${{ env.TAG }}

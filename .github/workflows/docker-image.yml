@@ -1,6 +1,7 @@
 # Builds, tests and publishes convenia/php-full on Docker Hub (replaces the Docker Hub autobuild and autotest).
 #
 # Every X.Y/Dockerfile is published as the X.Y tag, and the LATEST version is also published as latest.
+# The tags are multi-arch (amd64 and arm64), so the docker client pulls the image of its own arch.
 # The other files (docker/, public/, run_tests.sh) are shared by every version: the build context is the repo root.
 # A new PHP version gets its X.Y/Dockerfile and goes into the matrix list and LATEST.
 name: docker-image
@@ -63,6 +64,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Emulates arm64 to build it on the amd64 runner
+      - uses: docker/setup-qemu-action@v4
+
       - uses: docker/setup-buildx-action@v4
 
       - name: Build
@@ -74,15 +78,17 @@ jobs:
           load: true
           tags: ${{ steps.tags.outputs.tags }}
 
-      # Same test as docker-compose.test.yml, run against the image that gets pushed
+      # Same test as docker-compose.test.yml, run against the amd64 image that gets pushed
       - name: Test
         run: docker run --rm "$IMAGE:$VERSION" /run_tests.sh
 
+      # Pushes both archs in one multi-arch tag: amd64 comes from the builder cache, arm64 is built here
       - name: Push
         if: env.PUBLISH == 'true'
-        env:
-          TAGS: ${{ steps.tags.outputs.tags }}
-        run: |
-          for tag in ${TAGS//,/ }; do
-            docker push "$tag"
-          done
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ${{ matrix.version }}/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
