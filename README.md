@@ -38,7 +38,9 @@ PHP_VERSION=8.4 docker compose -f docker-compose.test.yml run --rm sut
 
 ### Production and Development versions
 
-The 8.5 Dockerfile has two build targets. The production one is the default:
+The 8.5 Dockerfile has two build targets. The production one is the default, published as `convenia/php-full:8.5`, and the development one is published as `convenia/php-full:8.5-dev`.
+
+To build them locally:
 
 ```
 # production (default)
