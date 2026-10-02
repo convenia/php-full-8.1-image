@@ -28,7 +28,7 @@ permissions:
   contents: read
 
 env:
-  IMAGE: convenia/testing
+  IMAGE: convenia/php-full
   LATEST: '8.5'
 
 jobs:
@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['8.5']
+        version: ['8.1', '8.2', '8.3', '8.4', '8.5']
     # Publishes of the same tag run one at a time, so an older commit never overwrites a newer one.
     # Pull requests get their own group, so they never cancel a pending publish
     concurrency:
