@@ -1,4 +1,4 @@
-FROM php:8.5-fpm-alpine3.21 AS base
+FROM php:8.5.12-fpm-alpine3.24 AS base
 # Information
 LABEL maintainer="leonardo.lemos@convenia.com.br"
 LABEL company="Convenia"
@@ -18,7 +18,7 @@ RUN IPE_GD_WITHOUTAVIF=1 install-php-extensions bcmath bz2 calendar exif gd gett
     mongodb-^2@stable \
     mysqli
 
-RUN apk add --no-cache --update supervisor=~4.2 nginx=~1.26 nginx-mod-http-headers-more openssh-client git less curl
+RUN apk add --no-cache --update supervisor=~4.3 nginx=~1.30 nginx-mod-http-headers-more openssh-client git less curl
 
 # Install composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer

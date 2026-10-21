@@ -1,4 +1,5 @@
-FROM php:8.1-fpm-alpine3.15
+# 8.1 is end of life: 8.1.34 on alpine3.21 is its last image, it gets no more PHP fixes
+FROM php:8.1.34-fpm-alpine3.21
 # Informações
 LABEL maintainer="leonardo.lemos@convenia.com.br"
 LABEL company="Convenia"
@@ -18,7 +19,7 @@ RUN IPE_GD_WITHOUTAVIF=1 install-php-extensions bcmath bz2 calendar exif gd gett
     mongodb-stable \
     imagick-stable
 
-RUN apk add --no-cache --update supervisor=~4.2 nginx=~1.20 nginx-mod-http-headers-more openssh-client git less curl
+RUN apk add --no-cache --update supervisor=~4.2 nginx=~1.26 nginx-mod-http-headers-more openssh-client git less curl
 
 # Instalação do composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
