@@ -141,6 +141,12 @@ docker build -t easycron .
 docker run --rm easycron crond -l 2 -f
 ```
 
+### Old PHP versions and php2shell vulnerability
+
+The `7.4` and `8.0` images are available, but they are not maintained.
+They only got the php2shell security backport, see [php2shell.md](php2shell.md).
+Use them only while you migrate to a supported PHP version.
+
 ### Changelog
 #### PHP version 8.5
 - Added the development build target (pcov, Redocly CLI, Infection, nvm, Yarn, bash, vim and sudo)
