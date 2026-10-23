@@ -1,0 +1,78 @@
+# Builds, tests and publishes the 7.4 tag of convenia/php-full on Docker Hub.
+#
+# PHP 7.4 is EOL and no longer supported: it stays out of the docker-image matrix, so it is not rebuilt on every
+# change, pull request or weekly schedule. It only runs when triggered manually, e.g. to ship a security backport.
+# The tag is multi-arch (amd64 and arm64), so the docker client pulls the image of its own arch.
+name: docker-image-7.4
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Push the image to Docker Hub
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: convenia/php-full
+  VERSION: '7.4'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    # Publishes run one at a time, so an older commit never overwrites a newer one
+    concurrency:
+      group: ${{ github.workflow }}
+    env:
+      PUBLISH: ${{ inputs.publish == true }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Login to Docker Hub
+        if: env.PUBLISH == 'true'
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Emulates arm64 to build it on the amd64 runner
+      - uses: docker/setup-qemu-action@v4
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build
+        uses: docker/build-push-action@v7
+        with:
+          # The default git context ignores the checkout: use the checked out repo root as context
+          context: .
+          file: ${{ env.VERSION }}/Dockerfile
+          load: true
+          tags: ${{ env.IMAGE }}:${{ env.VERSION }}
+
+      # The 7.4 image has no run_tests.sh: check the backport is in the installed binary and that nginx serves
+      # the default page through php-fpm, against the amd64 image that gets pushed
+      - name: Test
+        run: |
+          docker run --rm "$IMAGE:$VERSION" sh -euc '
+            grep -q zend_new_array_singleton /usr/local/sbin/php-fpm || { echo "PHP security backport missing"; exit 1; }
+            supervisord -c /etc/supervisord.conf &
+            sleep 5
+            curl --fail --silent --show-error --output /dev/null 127.0.0.1
+          '
+
+      # Pushes both archs in one multi-arch tag: amd64 comes from the builder cache, arm64 is built here
+      - name: Push
+        if: env.PUBLISH == 'true'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ${{ env.VERSION }}/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.IMAGE }}:${{ env.VERSION }}
