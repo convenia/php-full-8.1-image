@@ -35,7 +35,6 @@ jobs:
           persist-credentials: false
 
       - name: Login to Docker Hub
-        if: env.PUBLISH == 'true'
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -68,7 +67,6 @@ jobs:
 
       # Pushes both archs in one multi-arch tag: amd64 comes from the builder cache, arm64 is built here
       - name: Push
-        if: env.PUBLISH == 'true'
         uses: docker/build-push-action@v7
         with:
           context: .
