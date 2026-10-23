@@ -23,7 +23,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 180
     # Publishes run one at a time, so an older commit never overwrites a newer one
     concurrency:
       group: ${{ github.workflow }}
